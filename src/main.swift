@@ -36,10 +36,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         let exePath = Bundle.main.executablePath ?? ""
         let exeDir = (exePath as NSString).deletingLastPathComponent
-        let iconPath = (exeDir as NSString).appendingPathComponent("menubar/icon.png")
+        // let iconPath = (exeDir as NSString).appendingPathComponent("menubar/icon.png")
+        let iconPath = "./Resources/icon.svg"
+        
+        print(Bundle.module.resourcePath)
         
         if let image = NSImage(contentsOfFile: iconPath) {
             image.isTemplate = true
+            image.size = NSSize(width: 22, height: 22)
             statusItemImage = image
         }
         
