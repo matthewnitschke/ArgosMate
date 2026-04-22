@@ -1,0 +1,24 @@
+{
+  "configurations": [
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:ArgosMate}",
+      "name": "Debug ArgosMate",
+      "target": "ArgosMate",
+      "configuration": "debug",
+      "preLaunchTask": "swift: Build Debug ArgosMate"
+    },
+    {
+      "type": "swift",
+      "request": "launch",
+      "args": [],
+      "cwd": "${workspaceFolder:ArgosMate}",
+      "name": "Release ArgosMate",
+      "target": "ArgosMate",
+      "configuration": "release",
+      "preLaunchTask": "swift: Build Release ArgosMate"
+    }
+  ]
+}

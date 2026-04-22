@@ -1,2 +1,5 @@
-dev:
-	cd src && swift ./main.swift -framework CoreBluetooth
+build:
+	swift build
+
+run:
+	swift run
