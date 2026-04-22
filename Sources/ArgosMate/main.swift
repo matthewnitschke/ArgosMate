@@ -6,16 +6,10 @@ app.setActivationPolicy(.accessory)
 let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
 if let button = statusItem.button {
-    let bundle = Bundle.main
-    print("Bundle:", bundle.bundlePath)
-    print("EXE:", bundle.executablePath ?? "")
-
-    let exePath = bundle.executablePath ?? ""
-    let exeURL = URL(fileURLWithPath: exePath)
+    let exeURL = URL(fileURLWithPath: Bundle.main.executablePath ?? "")
     let bundlePath = exeURL.deletingLastPathComponent()
     let resourcesPath = bundlePath.appendingPathComponent("ArgosMate_ArgosMate.bundle")
     let iconPath = resourcesPath.appendingPathComponent("icon.svg").path
-    print("Icon path:", iconPath)
 
     if let image = NSImage(contentsOfFile: iconPath) {
         image.isTemplate = true
