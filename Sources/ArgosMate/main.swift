@@ -5,6 +5,8 @@ let serviceUUID = CBUUID(string: "6a521c59-55b5-4384-85c0-6534e63fb09e")
 let setPointUUID = CBUUID(string: "6a521c60-55b5-4384-85c0-6534e63fb09e")
 let boilerCurrentUUID = CBUUID(string: "6a521c61-55b5-4384-85c0-6534e63fb09e")
 let boilerTargetUUID = CBUUID(string: "6a521c66-55b5-4384-85c0-6534e63fb09e")
+let ghTempUUID = CBUUID(string: "6A521C62-55B5-4384-85C0-6534E63FB09E")
+
 
 let app = NSApplication.shared
 let delegate = AppDelegate()
@@ -17,16 +19,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   var connectedPeripheral: CBPeripheral?
 
   var isConnected = false
+  var setPoint: Double = 0
   var boilerCurrent: Double = 0
   var boilerTarget: Double = 0
-  var setPoint: Double = 0
+  var groupheadTemp: Double = 0
   var waterStatus: String = "OK"
 
   var menu: NSMenu!
   var statusMenuItem: NSMenuItem!
   var currentTempMenuItem: NSMenuItem!
   var targetTempMenuItem: NSMenuItem!
-  var basketTempMenuItem: NSMenuItem!
+  var groupheadTempMenuItem: NSMenuItem!
   var waterStatusMenuItem: NSMenuItem!
 
   func applicationDidFinishLaunching(_ notification: Notification) {
@@ -47,10 +50,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     menu = NSMenu()
 
-    statusMenuItem = NSMenuItem(title: "Status: Off", action: nil, keyEquivalent: "")
-    menu.addItem(statusMenuItem)
+    // statusMenuItem = NSMenuItem(title: "Status: Off", action: nil, keyEquivalent: "")
+    // menu.addItem(statusMenuItem)
     
-    menu.addItem(NSMenuItem.separator())
+    // menu.addItem(NSMenuItem.separator())
     
     currentTempMenuItem = NSMenuItem(title: "Current: --", action: nil, keyEquivalent: "")
     menu.addItem(currentTempMenuItem)
@@ -58,8 +61,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     targetTempMenuItem = NSMenuItem(title: "Target: --", action: nil, keyEquivalent: "")
     menu.addItem(targetTempMenuItem)
     
-    basketTempMenuItem = NSMenuItem(title: "Basket: --", action: nil, keyEquivalent: "")
-    menu.addItem(basketTempMenuItem)
+    groupheadTempMenuItem = NSMenuItem(title: "Grouphead: --", action: nil, keyEquivalent: "")
+    menu.addItem(groupheadTempMenuItem)
     
     waterStatusMenuItem = NSMenuItem(title: "Water: --", action: nil, keyEquivalent: "")
     menu.addItem(waterStatusMenuItem)
@@ -74,7 +77,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   func updateStatusBar() {
     guard let button = statusItem?.button else { return }
 
-    
     if !isConnected {
       button.title = "Off"
     } else {
@@ -86,11 +88,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       }
     }
     
-    statusMenuItem.title = isConnected ? "Status: Connected" : "Status: Off"
+    // statusMenuItem.title = isConnected ? "Status: Connected" : "Status: Off"
     currentTempMenuItem.title = String(format: "Current: %.1f°C", boilerCurrent)
     targetTempMenuItem.title = String(format: "Target: %.1f°C", boilerTarget)
-    let basketTemp = setPoint + 0.5 * (boilerCurrent - boilerTarget)
-    basketTempMenuItem.title = String(format: "Basket: %.1f°C", basketTemp)
+    groupheadTempMenuItem.title = String(format: "Gh: %.1f°C", groupheadTemp)
     waterStatusMenuItem.title = "Water: \(waterStatus)"
   }
 }
@@ -150,6 +151,8 @@ extension AppDelegate: CBPeripheralDelegate {
             boilerCurrent = temperature
         case boilerTargetUUID:
             boilerTarget = temperature
+        case ghTempUUID:
+          groupheadTemp = temperature
         default:
             break
         }
