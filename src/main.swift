@@ -25,7 +25,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   var waterStatus: String = "OK"
 
   var menu: NSMenu!
-  var statusMenuItem: NSMenuItem!
   var currentTempMenuItem: NSMenuItem!
   var targetTempMenuItem: NSMenuItem!
   var groupheadTempMenuItem: NSMenuItem!
@@ -41,51 +40,50 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       button.image = image
     }
 
-    menu = NSMenu()
-
-    // statusMenuItem = NSMenuItem(title: "Status: Off", action: nil, keyEquivalent: "")
-    // menu.addItem(statusMenuItem)
-    
-    // menu.addItem(NSMenuItem.separator())
-    
-    currentTempMenuItem = NSMenuItem(title: "Current: --", action: nil, keyEquivalent: "")
-    menu.addItem(currentTempMenuItem)
-    
-    targetTempMenuItem = NSMenuItem(title: "Target: --", action: nil, keyEquivalent: "")
-    menu.addItem(targetTempMenuItem)
-    
-    groupheadTempMenuItem = NSMenuItem(title: "Grouphead: --", action: nil, keyEquivalent: "")
-    menu.addItem(groupheadTempMenuItem)
-    
-    waterStatusMenuItem = NSMenuItem(title: "Water: --", action: nil, keyEquivalent: "")
-    menu.addItem(waterStatusMenuItem)
-
-    menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
-
-    statusItem!.menu = menu
+    buildMenu()
     updateStatusBar()
     centralManager = CBCentralManager(delegate: self, queue: .main)
+  }
+
+func buildMenu() {
+    menu = NSMenu()
+
+    if isConnected {
+      currentTempMenuItem = NSMenuItem(title: String(format: "Current: %.1f°C", boilerCurrent), action: nil, keyEquivalent: "")
+      menu.addItem(currentTempMenuItem)
+
+      targetTempMenuItem = NSMenuItem(title: String(format: "Target: %.1f°C", boilerTarget), action: nil, keyEquivalent: "")
+      menu.addItem(targetTempMenuItem)
+
+      groupheadTempMenuItem = NSMenuItem(title: String(format: "Gh: %.1f°C", groupheadTemp), action: nil, keyEquivalent: "")
+      menu.addItem(groupheadTempMenuItem)
+
+      waterStatusMenuItem = NSMenuItem(title: "Water: \(waterStatus)", action: nil, keyEquivalent: "")
+      menu.addItem(waterStatusMenuItem)
+    } else {
+      let disconnectedItem = NSMenuItem(title: "Disconnected", action: nil, keyEquivalent: "")
+      menu.addItem(disconnectedItem)
+    }
+
+    menu.addItem(NSMenuItem.separator())
+    menu.addItem(NSMenuItem(title: "Quit", action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
+
+    statusItem?.menu = menu
   }
 
   func updateStatusBar() {
     guard let button = statusItem?.button else { return }
 
     if !isConnected {
-      button.title = "Off"
+      button.title = ""
+    } else if waterStatus != "OK" {
+      button.title = "No Water"
     } else {
       let isAtTemp = abs(boilerCurrent - boilerTarget) < 0.5
-      if isAtTemp {
-        button.title = "Ready"
-      } else {
-        button.title = String(format: "%.1f°C", boilerCurrent)
-      }
+      button.title = isAtTemp ? "Ready" : "Heating"
     }
-    
-    // statusMenuItem.title = isConnected ? "Status: Connected" : "Status: Off"
-    currentTempMenuItem.title = String(format: "Current: %.1f°C", boilerCurrent)
-    targetTempMenuItem.title = String(format: "Target: %.1f°C", boilerTarget)
-    groupheadTempMenuItem.title = String(format: "Gh: %.1f°C", groupheadTemp)
-    waterStatusMenuItem.title = "Water: \(waterStatus)"
+
+    buildMenu()
   }
 }
 
