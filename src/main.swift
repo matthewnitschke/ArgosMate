@@ -7,7 +7,6 @@ let boilerCurrentUUID = CBUUID(string: "6a521c61-55b5-4384-85c0-6534e63fb09e")
 let boilerTargetUUID = CBUUID(string: "6a521c66-55b5-4384-85c0-6534e63fb09e")
 let ghTempUUID = CBUUID(string: "6A521C62-55B5-4384-85C0-6534E63FB09E")
 
-
 let app = NSApplication.shared
 let delegate = AppDelegate()
 app.delegate = delegate
@@ -33,19 +32,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
   var waterStatusMenuItem: NSMenuItem!
 
   func applicationDidFinishLaunching(_ notification: Notification) {
-    statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
+    statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
 
     if let button = statusItem!.button {
-      let exeURL = URL(fileURLWithPath: Bundle.main.executablePath ?? "")
-      let bundlePath = exeURL.deletingLastPathComponent()
-      let resourcesPath = bundlePath.appendingPathComponent("ArgosMate_ArgosMate.bundle")
-      let iconPath = resourcesPath.appendingPathComponent("icon.svg").path
-
-      if let image = NSImage(contentsOfFile: iconPath) {
-          image.isTemplate = true
-          image.size = NSSize(width: 22, height: 22)
-          button.image = image
-      }
+      button.title = ""
+      let image = createIconImage()
+      image.isTemplate = true
+      button.image = image
     }
 
     menu = NSMenu()
@@ -159,6 +152,48 @@ extension AppDelegate: CBPeripheralDelegate {
         
         updateStatusBar()
     }
+}
+
+func createIconImage(size: NSSize = NSSize(width: 22, height: 22)) -> NSImage {
+    let image = NSImage(size: size)
+    image.addRepresentation(NSBitmapImageRep(
+        bitmapDataPlanes: nil,
+        pixelsWide: Int(size.width),
+        pixelsHigh: Int(size.height),
+        bitsPerSample: 8,
+        samplesPerPixel: 4,
+        hasAlpha: true,
+        isPlanar: false,
+        colorSpaceName: .deviceRGB,
+        bytesPerRow: 0,
+        bitsPerPixel: 0
+    )!)
+
+    image.lockFocus()
+
+    let context = NSGraphicsContext.current!.cgContext
+
+    let scaleX = size.width / 36.0
+    let scaleY = size.height / 36.0
+
+    let path = CGMutablePath()
+    path.move(to: CGPoint(x: 7 * scaleX, y: (36 - 26.3033) * scaleY))
+    path.addLine(to: CGPoint(x: 7 * scaleX, y: (36 - 32) * scaleY))
+    path.addLine(to: CGPoint(x: 28 * scaleX, y: (36 - 32) * scaleY))
+    path.addLine(to: CGPoint(x: 28 * scaleX, y: (36 - 16.5359) * scaleY))
+    path.addLine(to: CGPoint(x: 8.03317 * scaleX, y: (36 - 4) * scaleY))
+    path.addLine(to: CGPoint(x: 8.03317 * scaleX, y: (36 - 11.0385) * scaleY))
+    path.addLine(to: CGPoint(x: 21.6965 * scaleX, y: (36 - 19.5036) * scaleY))
+    path.addLine(to: CGPoint(x: 21.6965 * scaleX, y: (36 - 26.3033) * scaleY))
+    path.closeSubpath()
+
+    context.setFillColor(NSColor.black.cgColor)
+    context.addPath(path)
+    context.fillPath()
+
+    image.unlockFocus()
+
+    return image
 }
 
 app.run()
