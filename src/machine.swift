@@ -100,20 +100,16 @@ extension PhysicalArgos {
 }
 
 class MockArgos: ArgosMachine {
-    private var updateTimer: Timer?
 
     override func initiate() {
         startCommandLoop()
     }
 
     private func startCommandLoop() {
-        print("""
-            Mock commands: connect (c), disconnect (d), ready (r), heating (h)
-            """)
+        print("Mock commands: connect (c), disconnect (d), ready (r)")
 
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
             while let line = readLine()?.lowercased() {
-                _ = FileHandle.standardInput.availableData
                 switch line {
                 case "connect", "c":
                     self?.connect()
@@ -121,15 +117,12 @@ class MockArgos: ArgosMachine {
                     self?.disconnect()
                 case "ready", "r":
                     self?.ready()
-                case "heating", "h":
-                    self?.heating()
                 default:
                     print("Invalid command: \(line)")
                 }
+                self?.printState()
             }
         }
-
-        self.connect()
     }
 
     func connect() {
@@ -139,50 +132,31 @@ class MockArgos: ArgosMachine {
         setPoint = 93.0
         groupheadTemp = 25.0
         onUpdate?(self)
-        heating()
     }
 
     func disconnect() {
-        updateTimer?.invalidate()
-        updateTimer = nil
         isConnected = false
+        boilerCurrent = 0
+        groupheadTemp = 0
         onUpdate?(self)
     }
 
     func ready() {
-        updateTimer?.invalidate()
-        updateTimer = nil
         boilerCurrent = boilerTarget
         groupheadTemp = boilerTarget - 2.0
         onUpdate?(self)
     }
 
-    func heating() {
-        let startTemp = 25.0
-        let targetTemp = boilerTarget
-        let duration: TimeInterval = 4.0
-        let steps = 40
-        let stepDuration = duration / Double(steps)
-        let tempIncrement = (targetTemp - startTemp) / Double(steps)
 
-        var currentStep = 0
-
-        updateTimer = Timer.scheduledTimer(withTimeInterval: stepDuration, repeats: true) { [weak self] timer in
-            guard let self = self else {
-                timer.invalidate()
-                return
-            }
-
-            currentStep += 1
-            if currentStep >= steps {
-                timer.invalidate()
-                self.boilerCurrent = targetTemp
-                self.groupheadTemp = targetTemp - 2.0
-            } else {
-                self.boilerCurrent += tempIncrement
-                self.groupheadTemp += tempIncrement
-            }
-            self.onUpdate?(self)
-        }
+    func printState() {
+        print("""
+            --- Machine State ---
+            isConnected: \(isConnected)
+            setPoint: \(setPoint)
+            boilerCurrent: \(boilerCurrent)
+            boilerTarget: \(boilerTarget)
+            groupheadTemp: \(groupheadTemp)
+            ---------------------
+            """)
     }
 }

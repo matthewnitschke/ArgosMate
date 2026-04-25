@@ -51,7 +51,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       targetTempMenuItem = NSMenuItem(title: String(format: "Target: %.1f°C", machine.boilerTarget), action: nil, keyEquivalent: "")
       menu.addItem(targetTempMenuItem)
 
-      groupheadTempMenuItem = NSMenuItem(title: String(format: "Gh: %.1f°C", machine.groupheadTemp), action: nil, keyEquivalent: "")
+      groupheadTempMenuItem = NSMenuItem(title: String(format: "Grouphead: %.1f°C", machine.groupheadTemp), action: nil, keyEquivalent: "")
       menu.addItem(groupheadTempMenuItem)
 
       waterStatusMenuItem = NSMenuItem(title: "Water: \(machine.waterStatus)", action: nil, keyEquivalent: "")
@@ -76,7 +76,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       button.title = "No Water"
     } else {
       let isAtTemp = abs(machine.boilerCurrent - machine.boilerTarget) < 0.5
-      button.title = isAtTemp ? "Ready" : "Heating"
+      if (isAtTemp) {
+        button.title = "Ready"
+      } else {
+        button.title = String(format: "%.0f° / %.0f°", machine.boilerCurrent, machine.boilerTarget)
+      }
     }
 
     buildMenu()
