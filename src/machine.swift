@@ -5,7 +5,7 @@ let serviceUUID = CBUUID(string: "6a521c59-55b5-4384-85c0-6534e63fb09e")
 let setPointUUID = CBUUID(string: "6a521c60-55b5-4384-85c0-6534e63fb09e")
 let boilerCurrentUUID = CBUUID(string: "6a521c61-55b5-4384-85c0-6534e63fb09e")
 let boilerTargetUUID = CBUUID(string: "6a521c66-55b5-4384-85c0-6534e63fb09e")
-let ghTempUUID = CBUUID(string: "6A521C62-55B5-4384-85C0-6534E63FB09E")
+let groupheadTempUUID = CBUUID(string: "6A521C62-55B5-4384-85C0-6534E63FB09E")
 
 class ArgosMachine: NSObject {
     var onUpdate: ((ArgosMachine) -> Void)?
@@ -20,7 +20,7 @@ class ArgosMachine: NSObject {
     func initiate() {}
 }
 
-class RealArgosMachine: ArgosMachine, CBCentralManagerDelegate, CBPeripheralDelegate {
+class PhysicalArgos: ArgosMachine, CBCentralManagerDelegate, CBPeripheralDelegate {
     var centralManager: CBCentralManager!
     var peripheral: CBPeripheral!
 
@@ -33,7 +33,7 @@ class RealArgosMachine: ArgosMachine, CBCentralManagerDelegate, CBPeripheralDele
     }
 }
 
-extension RealArgosMachine {
+extension PhysicalArgos {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             startScan()
@@ -62,7 +62,7 @@ extension RealArgosMachine {
     }
 }
 
-extension RealArgosMachine {
+extension PhysicalArgos {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard let services = peripheral.services else { return }
         for service in services {
@@ -89,7 +89,7 @@ extension RealArgosMachine {
             boilerCurrent = temperature
         case boilerTargetUUID:
             boilerTarget = temperature
-        case ghTempUUID:
+        case groupheadTempUUID:
             groupheadTemp = temperature
         default:
             return
@@ -99,7 +99,7 @@ extension RealArgosMachine {
     }
 }
 
-class MockArgosMachine: ArgosMachine {
+class MockArgos: ArgosMachine {
     private var heatingTimer: Timer?
     private var updateTimer: Timer?
 

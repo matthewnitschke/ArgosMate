@@ -28,9 +28,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     if useMock {
-      machine = MockArgosMachine()
+      machine = MockArgos()
     } else {
-      machine = RealArgosMachine()
+      machine = PhysicalArgos()
     }
 
     machine.onUpdate = { [weak self] _ in self?.updateStatusBar() }
