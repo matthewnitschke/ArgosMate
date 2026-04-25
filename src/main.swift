@@ -1,11 +1,7 @@
 import AppKit
 import CoreBluetooth
 
-let serviceUUID = CBUUID(string: "6a521c59-55b5-4384-85c0-6534e63fb09e")
-let setPointUUID = CBUUID(string: "6a521c60-55b5-4384-85c0-6534e63fb09e")
-let boilerCurrentUUID = CBUUID(string: "6a521c61-55b5-4384-85c0-6534e63fb09e")
-let boilerTargetUUID = CBUUID(string: "6a521c66-55b5-4384-85c0-6534e63fb09e")
-let ghTempUUID = CBUUID(string: "6A521C62-55B5-4384-85C0-6534E63FB09E")
+let useMock = CommandLine.arguments.contains("--mock")
 
 let app = NSApplication.shared
 let delegate = AppDelegate()
@@ -14,15 +10,7 @@ app.setActivationPolicy(.accessory)
 
 class AppDelegate: NSObject, NSApplicationDelegate {
   var statusItem: NSStatusItem?
-  var centralManager: CBCentralManager!
-  var connectedPeripheral: CBPeripheral?
-
-  var isConnected = false
-  var setPoint: Double = 0
-  var boilerCurrent: Double = 0
-  var boilerTarget: Double = 0
-  var groupheadTemp: Double = 0
-  var waterStatus: String = "OK"
+  var machine: ArgosMachine!
 
   var menu: NSMenu!
   var currentTempMenuItem: NSMenuItem!
@@ -40,25 +28,34 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       button.image = image
     }
 
+    if useMock {
+      machine = MockArgosMachine()
+    } else {
+      machine = RealArgosMachine()
+    }
+
+    machine.delegate = self
+
     buildMenu()
     updateStatusBar()
-    centralManager = CBCentralManager(delegate: self, queue: .main)
+
+    machine.initiate()
   }
 
-func buildMenu() {
+  func buildMenu() {
     menu = NSMenu()
 
-    if isConnected {
-      currentTempMenuItem = NSMenuItem(title: String(format: "Current: %.1f°C", boilerCurrent), action: nil, keyEquivalent: "")
+    if machine.isConnected {
+      currentTempMenuItem = NSMenuItem(title: String(format: "Current: %.1f°C", machine.boilerCurrent), action: nil, keyEquivalent: "")
       menu.addItem(currentTempMenuItem)
 
-      targetTempMenuItem = NSMenuItem(title: String(format: "Target: %.1f°C", boilerTarget), action: nil, keyEquivalent: "")
+      targetTempMenuItem = NSMenuItem(title: String(format: "Target: %.1f°C", machine.boilerTarget), action: nil, keyEquivalent: "")
       menu.addItem(targetTempMenuItem)
 
-      groupheadTempMenuItem = NSMenuItem(title: String(format: "Gh: %.1f°C", groupheadTemp), action: nil, keyEquivalent: "")
+      groupheadTempMenuItem = NSMenuItem(title: String(format: "Gh: %.1f°C", machine.groupheadTemp), action: nil, keyEquivalent: "")
       menu.addItem(groupheadTempMenuItem)
 
-      waterStatusMenuItem = NSMenuItem(title: "Water: \(waterStatus)", action: nil, keyEquivalent: "")
+      waterStatusMenuItem = NSMenuItem(title: "Water: \(machine.waterStatus)", action: nil, keyEquivalent: "")
       menu.addItem(waterStatusMenuItem)
     } else {
       let disconnectedItem = NSMenuItem(title: "Disconnected", action: nil, keyEquivalent: "")
@@ -74,12 +71,12 @@ func buildMenu() {
   func updateStatusBar() {
     guard let button = statusItem?.button else { return }
 
-    if !isConnected {
+    if !machine.isConnected {
       button.title = ""
-    } else if waterStatus != "OK" {
+    } else if machine.waterStatus != "OK" {
       button.title = "No Water"
     } else {
-      let isAtTemp = abs(boilerCurrent - boilerTarget) < 0.5
+      let isAtTemp = abs(machine.boilerCurrent - machine.boilerTarget) < 0.5
       button.title = isAtTemp ? "Ready" : "Heating"
     }
 
@@ -87,31 +84,54 @@ func buildMenu() {
   }
 }
 
+extension AppDelegate: ArgosMachineDelegate {
+  func argosMachineDidConnect(_ machine: ArgosMachine) {
+    updateStatusBar()
+  }
+
+  func argosMachineDidDisconnect(_ machine: ArgosMachine) {
+    updateStatusBar()
+  }
+
+  func argosMachine(_ machine: ArgosMachine, didUpdateSetPoint setPoint: Double) {
+    updateStatusBar()
+  }
+
+  func argosMachine(_ machine: ArgosMachine, didUpdateBoilerCurrent current: Double) {
+    updateStatusBar()
+  }
+
+  func argosMachine(_ machine: ArgosMachine, didUpdateBoilerTarget target: Double) {
+    updateStatusBar()
+  }
+
+  func argosMachine(_ machine: ArgosMachine, didUpdateGroupheadTemp temp: Double) {
+    updateStatusBar()
+  }
+
+  func argosMachine(_ machine: ArgosMachine, didUpdateWaterStatus status: String) {
+    updateStatusBar()
+  }
+}
+
 extension AppDelegate: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
-            central.scanForPeripherals(withServices: [serviceUUID], options: nil)
+            (machine as! RealArgosMachine).startScan()
         }
     }
-    
+
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         if peripheral.name?.lowercased().starts(with: "argos") == true {
             central.stopScan()
-            connectedPeripheral = peripheral
-            peripheral.delegate = self
-            central.connect(peripheral, options: nil)
         }
     }
-    
+
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        isConnected = true
-        peripheral.discoverServices([serviceUUID])
+        (machine as! RealArgosMachine).peripheral.discoverServices([serviceUUID])
     }
-    
+
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        isConnected = false
-        updateStatusBar()
-        central.scanForPeripherals(withServices: [serviceUUID], options: nil)
     }
 }
 
@@ -122,33 +142,15 @@ extension AppDelegate: CBPeripheralDelegate {
             peripheral.discoverCharacteristics([setPointUUID, boilerCurrentUUID, boilerTargetUUID], for: service)
         }
     }
-    
+
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
         guard let characteristics = service.characteristics else { return }
         for characteristic in characteristics {
             peripheral.setNotifyValue(true, for: characteristic)
         }
     }
-    
+
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-        guard let data = characteristic.value, data.count >= 8 else { return }
-        
-        let temperature = data.withUnsafeBytes { $0.load(as: Double.self) }
-        
-        switch characteristic.uuid {
-        case setPointUUID:
-            setPoint = temperature
-        case boilerCurrentUUID:
-            boilerCurrent = temperature
-        case boilerTargetUUID:
-            boilerTarget = temperature
-        case ghTempUUID:
-          groupheadTemp = temperature
-        default:
-            break
-        }
-        
-        updateStatusBar()
     }
 }
 
