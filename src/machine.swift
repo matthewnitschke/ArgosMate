@@ -100,26 +100,66 @@ extension PhysicalArgos {
 }
 
 class MockArgos: ArgosMachine {
-    private var heatingTimer: Timer?
     private var updateTimer: Timer?
 
     override func initiate() {
-        isConnected = true
-        onUpdate?(self)
+        startCommandLoop()
+    }
 
+    private func startCommandLoop() {
+        print("""
+            Mock commands: connect (c), disconnect (d), ready (r), heating (h)
+            """)
+
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            while let line = readLine()?.lowercased() {
+                _ = FileHandle.standardInput.availableData
+                switch line {
+                case "connect", "c":
+                    self?.connect()
+                case "disconnect", "d":
+                    self?.disconnect()
+                case "ready", "r":
+                    self?.ready()
+                case "heating", "h":
+                    self?.heating()
+                default:
+                    print("Invalid command: \(line)")
+                }
+            }
+        }
+
+        self.connect()
+    }
+
+    func connect() {
+        isConnected = true
         boilerCurrent = 25.0
         boilerTarget = 93.0
         setPoint = 93.0
         groupheadTemp = 25.0
-
         onUpdate?(self)
-
-        startHeatingSimulation()
+        heating()
     }
 
-    private func startHeatingSimulation() {
+    func disconnect() {
+        updateTimer?.invalidate()
+        updateTimer = nil
+        isConnected = false
+        onUpdate?(self)
+    }
+
+    func ready() {
+        updateTimer?.invalidate()
+        updateTimer = nil
+        boilerCurrent = boilerTarget
+        groupheadTemp = boilerTarget - 2.0
+        onUpdate?(self)
+    }
+
+    func heating() {
         let startTemp = 25.0
-        let targetTemp = 93.0
+        let targetTemp = boilerTarget
         let duration: TimeInterval = 4.0
         let steps = 40
         let stepDuration = duration / Double(steps)
