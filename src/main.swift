@@ -1,5 +1,4 @@
 import AppKit
-import CoreBluetooth
 
 let useMock = CommandLine.arguments.contains("--mock")
 
@@ -34,7 +33,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       machine = RealArgosMachine()
     }
 
-    machine.delegate = self
+    machine.onUpdate = { [weak self] _ in self?.updateStatusBar() }
 
     buildMenu()
     updateStatusBar()
@@ -82,76 +81,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     buildMenu()
   }
-}
-
-extension AppDelegate: ArgosMachineDelegate {
-  func argosMachineDidConnect(_ machine: ArgosMachine) {
-    updateStatusBar()
-  }
-
-  func argosMachineDidDisconnect(_ machine: ArgosMachine) {
-    updateStatusBar()
-  }
-
-  func argosMachine(_ machine: ArgosMachine, didUpdateSetPoint setPoint: Double) {
-    updateStatusBar()
-  }
-
-  func argosMachine(_ machine: ArgosMachine, didUpdateBoilerCurrent current: Double) {
-    updateStatusBar()
-  }
-
-  func argosMachine(_ machine: ArgosMachine, didUpdateBoilerTarget target: Double) {
-    updateStatusBar()
-  }
-
-  func argosMachine(_ machine: ArgosMachine, didUpdateGroupheadTemp temp: Double) {
-    updateStatusBar()
-  }
-
-  func argosMachine(_ machine: ArgosMachine, didUpdateWaterStatus status: String) {
-    updateStatusBar()
-  }
-}
-
-extension AppDelegate: CBCentralManagerDelegate {
-    func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        if central.state == .poweredOn {
-            (machine as! RealArgosMachine).startScan()
-        }
-    }
-
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
-        if peripheral.name?.lowercased().starts(with: "argos") == true {
-            central.stopScan()
-        }
-    }
-
-    func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
-        (machine as! RealArgosMachine).peripheral.discoverServices([serviceUUID])
-    }
-
-    func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-    }
-}
-
-extension AppDelegate: CBPeripheralDelegate {
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
-        guard let services = peripheral.services else { return }
-        for service in services {
-            peripheral.discoverCharacteristics([setPointUUID, boilerCurrentUUID, boilerTargetUUID], for: service)
-        }
-    }
-
-    func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService, error: Error?) {
-        guard let characteristics = service.characteristics else { return }
-        for characteristic in characteristics {
-            peripheral.setNotifyValue(true, for: characteristic)
-        }
-    }
-
-    func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
-    }
 }
 
 func createIconImage(size: NSSize = NSSize(width: 22, height: 22)) -> NSImage {

@@ -7,18 +7,8 @@ let boilerCurrentUUID = CBUUID(string: "6a521c61-55b5-4384-85c0-6534e63fb09e")
 let boilerTargetUUID = CBUUID(string: "6a521c66-55b5-4384-85c0-6534e63fb09e")
 let ghTempUUID = CBUUID(string: "6A521C62-55B5-4384-85C0-6534E63FB09E")
 
-protocol ArgosMachineDelegate: AnyObject {
-    func argosMachineDidConnect(_ machine: ArgosMachine)
-    func argosMachineDidDisconnect(_ machine: ArgosMachine)
-    func argosMachine(_ machine: ArgosMachine, didUpdateSetPoint setPoint: Double)
-    func argosMachine(_ machine: ArgosMachine, didUpdateBoilerCurrent current: Double)
-    func argosMachine(_ machine: ArgosMachine, didUpdateBoilerTarget target: Double)
-    func argosMachine(_ machine: ArgosMachine, didUpdateGroupheadTemp temp: Double)
-    func argosMachine(_ machine: ArgosMachine, didUpdateWaterStatus status: String)
-}
-
 class ArgosMachine: NSObject {
-    weak var delegate: ArgosMachineDelegate?
+    var onUpdate: ((ArgosMachine) -> Void)?
 
     var isConnected: Bool = false
     var setPoint: Double = 0
@@ -61,13 +51,13 @@ extension RealArgosMachine {
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         isConnected = true
-        delegate?.argosMachineDidConnect(self)
+        onUpdate?(self)
         peripheral.discoverServices([serviceUUID])
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         isConnected = false
-        delegate?.argosMachineDidDisconnect(self)
+        onUpdate?(self)
         central.scanForPeripherals(withServices: [serviceUUID], options: nil)
     }
 }
@@ -95,19 +85,17 @@ extension RealArgosMachine {
         switch characteristic.uuid {
         case setPointUUID:
             setPoint = temperature
-            delegate?.argosMachine(self, didUpdateSetPoint: temperature)
         case boilerCurrentUUID:
             boilerCurrent = temperature
-            delegate?.argosMachine(self, didUpdateBoilerCurrent: temperature)
         case boilerTargetUUID:
             boilerTarget = temperature
-            delegate?.argosMachine(self, didUpdateBoilerTarget: temperature)
         case ghTempUUID:
             groupheadTemp = temperature
-            delegate?.argosMachine(self, didUpdateGroupheadTemp: temperature)
         default:
-            break
+            return
         }
+
+        onUpdate?(self)
     }
 }
 
@@ -117,18 +105,14 @@ class MockArgosMachine: ArgosMachine {
 
     override func initiate() {
         isConnected = true
-        delegate?.argosMachineDidConnect(self)
+        onUpdate?(self)
 
         boilerCurrent = 25.0
         boilerTarget = 93.0
         setPoint = 93.0
         groupheadTemp = 25.0
 
-        delegate?.argosMachine(self, didUpdateSetPoint: setPoint)
-        delegate?.argosMachine(self, didUpdateBoilerCurrent: boilerCurrent)
-        delegate?.argosMachine(self, didUpdateBoilerTarget: boilerTarget)
-        delegate?.argosMachine(self, didUpdateGroupheadTemp: groupheadTemp)
-        delegate?.argosMachine(self, didUpdateWaterStatus: waterStatus)
+        onUpdate?(self)
 
         startHeatingSimulation()
     }
@@ -154,14 +138,11 @@ class MockArgosMachine: ArgosMachine {
                 timer.invalidate()
                 self.boilerCurrent = targetTemp
                 self.groupheadTemp = targetTemp - 2.0
-                self.delegate?.argosMachine(self, didUpdateBoilerCurrent: targetTemp)
-                self.delegate?.argosMachine(self, didUpdateGroupheadTemp: targetTemp - 2.0)
             } else {
                 self.boilerCurrent += tempIncrement
                 self.groupheadTemp += tempIncrement
-                self.delegate?.argosMachine(self, didUpdateBoilerCurrent: self.boilerCurrent)
-                self.delegate?.argosMachine(self, didUpdateGroupheadTemp: self.groupheadTemp)
             }
+            self.onUpdate?(self)
         }
     }
 }
