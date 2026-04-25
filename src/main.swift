@@ -10,6 +10,7 @@ app.setActivationPolicy(.accessory)
 class AppDelegate: NSObject, NSApplicationDelegate {
   var statusItem: NSStatusItem?
   var machine: ArgosMachine!
+  var wasReady = false
 
   var menu: NSMenu!
   var currentTempMenuItem: NSMenuItem!
@@ -78,12 +79,26 @@ class AppDelegate: NSObject, NSApplicationDelegate {
       let isAtTemp = abs(machine.boilerCurrent - machine.boilerTarget) < 0.5
       if (isAtTemp) {
         button.title = "Ready"
+        if !wasReady {
+          wasReady = true
+          sendReadyNotification()
+        }
       } else {
+        wasReady = false
         button.title = String(format: "%.0f° / %.0f°", machine.boilerCurrent, machine.boilerTarget)
       }
     }
 
     buildMenu()
+  }
+
+  func sendReadyNotification() {
+    let notification = NSUserNotification()
+    notification.title = "Espresso Machine Ready"
+    notification.informativeText = "Your Argos machine has reached target temperature."
+    notification.soundName = NSUserNotificationDefaultSoundName
+
+    NSUserNotificationCenter.default.deliver(notification)
   }
 }
 

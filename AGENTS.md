@@ -5,7 +5,7 @@ Menubar app displaying stats about the Argos espresso machine via Bluetooth.
 ## Build
 
 ```bash
-bash build.sh
+make build
 ```
 
 Runs `swiftc` with CoreBluetooth framework. Output: `ArgosMate.app/`
