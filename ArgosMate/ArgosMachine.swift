@@ -8,35 +8,23 @@ let boilerCurrentUUID = CBUUID(string: "6a521c61-55b5-4384-85c0-6534e63fb09e")
 let boilerTargetUUID = CBUUID(string: "6a521c66-55b5-4384-85c0-6534e63fb09e")
 let groupheadTempUUID = CBUUID(string: "6A521C62-55B5-4384-85C0-6534E63FB09E")
 
-protocol BluetoothAdapter: AnyObject {
-    var onValueRead: ((CharacteristicID, Data) -> Void)? { get set }
-    var onConnect: (() -> Void)? { get set }
-    var onDisconnect: (() -> Void)? { get set }
-    func startScanning()
-    func stopScanning()
-}
-
-enum CharacteristicID {
-    case setPoint
-    case boilerCurrent
-    case boilerTarget
-    case groupheadTemp
-}
-
-final class CoreBluetoothAdapter: NSObject, BluetoothAdapter {
-    var onValueRead: ((CharacteristicID, Data) -> Void)?
-    var onConnect: (() -> Void)?
-    var onDisconnect: (() -> Void)?
+final class ArgosMachine: NSObject, ObservableObject {
+    @Published var isConnected: Bool = false
+    @Published var setPoint: Double = 0
+    @Published var boilerCurrent: Double = 0
+    @Published var boilerTarget: Double = 0
+    @Published var groupheadTemp: Double = 0
+    @Published var waterStatus: String = "OK"
 
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
 
-    func startScanning() {
-        centralManager = CBCentralManager(delegate: self, queue: .main)
+    override init() {
+        super.init()
     }
 
-    func stopScanning() {
-        centralManager?.stopScan()
+    func initiate() {
+        centralManager = CBCentralManager(delegate: self, queue: .main)
     }
 
     private func scan() {
@@ -44,7 +32,7 @@ final class CoreBluetoothAdapter: NSObject, BluetoothAdapter {
     }
 }
 
-extension CoreBluetoothAdapter: CBCentralManagerDelegate {
+extension ArgosMachine: CBCentralManagerDelegate {
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         if central.state == .poweredOn {
             scan()
@@ -62,20 +50,22 @@ extension CoreBluetoothAdapter: CBCentralManagerDelegate {
 
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         DispatchQueue.main.async { [weak self] in
-            self?.onConnect?()
+            self?.isConnected = true
         }
         peripheral.discoverServices([serviceUUID])
     }
 
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         DispatchQueue.main.async { [weak self] in
-            self?.onDisconnect?()
+            self?.isConnected = false
+            self?.boilerCurrent = 0
+            self?.groupheadTemp = 0
         }
         central.scanForPeripherals(withServices: [serviceUUID], options: nil)
     }
 }
 
-extension CoreBluetoothAdapter: CBPeripheralDelegate {
+extension ArgosMachine: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard let services = peripheral.services else { return }
         for service in services {
@@ -92,97 +82,21 @@ extension CoreBluetoothAdapter: CBPeripheralDelegate {
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         guard let data = characteristic.value, data.count >= 8 else { return }
-
-        let charID: CharacteristicID
-        switch characteristic.uuid {
-        case setPointUUID:
-            charID = .setPoint
-        case boilerCurrentUUID:
-            charID = .boilerCurrent
-        case boilerTargetUUID:
-            charID = .boilerTarget
-        case groupheadTempUUID:
-            charID = .groupheadTemp
-        default:
-            return
-        }
+        let value = data.withUnsafeBytes { $0.load(as: Double.self) }
 
         DispatchQueue.main.async { [weak self] in
-            self?.onValueRead?(charID, data)
-        }
-    }
-}
-
-final class MockBluetoothAdapter: BluetoothAdapter {
-    var onValueRead: ((CharacteristicID, Data) -> Void)?
-    var onConnect: (() -> Void)?
-    var onDisconnect: (() -> Void)?
-
-    func startScanning() {
-        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            print("Mock: waiting for commands...")
-            print("Mock commands: connect (c), disconnect (d), ready (r)")
-
-            while let line = readLine()?.lowercased() {
-                switch line {
-                case "connect", "c":
-                    self?.onConnect?()
-                case "disconnect", "d":
-                    self?.onDisconnect?()
-                case "ready", "r":
-                    let data = withUnsafeBytes(of: 91.0) { Data($0) }
-                    self?.onValueRead?(.groupheadTemp, data)
-                default:
-                    print("Invalid command: \(line)")
-                }
-            }
-        }
-    }
-
-    func stopScanning() {}
-}
-
-final class ArgosMachine: ObservableObject {
-    @Published var isConnected: Bool = false
-    @Published var setPoint: Double = 0
-    @Published var boilerCurrent: Double = 0
-    @Published var boilerTarget: Double = 0
-    @Published var groupheadTemp: Double = 0
-    @Published var waterStatus: String = "OK"
-
-    private let adapter: BluetoothAdapter
-
-    init(adapter: BluetoothAdapter) {
-        self.adapter = adapter
-        self.adapter.onConnect = { [weak self] in
-            self?.isConnected = true
-            self?.boilerCurrent = 25.0
-            self?.boilerTarget = 93.0
-            self?.setPoint = 93.0
-            self?.groupheadTemp = 25.0
-        }
-        self.adapter.onDisconnect = { [weak self] in
-            self?.isConnected = false
-            self?.boilerCurrent = 0
-            self?.groupheadTemp = 0
-        }
-        self.adapter.onValueRead = { [weak self] charID, data in
-            guard data.count >= 8 else { return }
-            let value = data.withUnsafeBytes { $0.load(as: Double.self) }
-            switch charID {
-            case .setPoint:
+            switch characteristic.uuid {
+            case setPointUUID:
                 self?.setPoint = value
-            case .boilerCurrent:
+            case boilerCurrentUUID:
                 self?.boilerCurrent = value
-            case .boilerTarget:
+            case boilerTargetUUID:
                 self?.boilerTarget = value
-            case .groupheadTemp:
+            case groupheadTempUUID:
                 self?.groupheadTemp = value
+            default:
+                break
             }
         }
-    }
-
-    func initiate() {
-        adapter.startScanning()
     }
 }

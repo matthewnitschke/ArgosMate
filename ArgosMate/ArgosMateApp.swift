@@ -4,24 +4,17 @@ import Combine
 
 @main
 struct ArgosMateApp: App {
-    @StateObject private var machine: ArgosMachine
-
+    @StateObject private var machine = ArgosMachine()
+    
     init() {
-        let useMock = CommandLine.arguments.contains("--mock")
-        
-        _machine = StateObject(wrappedValue: ArgosMachine(
-            adapter: useMock ? MockBluetoothAdapter() : CoreBluetoothAdapter()
-        ))
+        machine.initiate()
     }
 
     var body: some Scene {
         MenuBarExtra {
             MenuBarContent(machine: machine)
-                .task {
-                    machine.initiate()
-                }
         } label: {
-            MenuBarLabel()
+            MenuBarLabel(machine: machine)
         }
     }
 }
