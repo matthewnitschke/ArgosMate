@@ -19,5 +19,11 @@ struct ArgosMateApp: App {
         } label: {
             MenuBarLabel(machine: machine)
         }
+
+        Settings {
+            SettingsView()
+                .frame(width: 400, height: 300)
+                .environmentObject(machine)
+        }
     }
 }
