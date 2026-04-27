@@ -6,27 +6,8 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXContainerItemProxy section */
-		1A146CAF2F9D26F900A8452C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1A146C982F9D26F700A8452C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1A146C9F2F9D26F700A8452C;
-			remoteInfo = ArgosMate;
-		};
-		1A146CB92F9D26F900A8452C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 1A146C982F9D26F700A8452C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1A146C9F2F9D26F700A8452C;
-			remoteInfo = ArgosMate;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
 		1A146CA02F9D26F700A8452C /* ArgosMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArgosMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		1A146CAE2F9D26F900A8452C /* ArgosMateTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ArgosMateTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		1A146CB82F9D26F900A8452C /* ArgosMateUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ArgosMateUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -39,20 +20,6 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		1A146C9D2F9D26F700A8452C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1A146CAB2F9D26F900A8452C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1A146CB52F9D26F900A8452C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -74,8 +41,6 @@
 			isa = PBXGroup;
 			children = (
 				1A146CA02F9D26F700A8452C /* ArgosMate.app */,
-				1A146CAE2F9D26F900A8452C /* ArgosMateTests.xctest */,
-				1A146CB82F9D26F900A8452C /* ArgosMateUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -105,46 +70,6 @@
 			productReference = 1A146CA02F9D26F700A8452C /* ArgosMate.app */;
 			productType = "com.apple.product-type.application";
 		};
-		1A146CAD2F9D26F900A8452C /* ArgosMateTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1A146CC52F9D26F900A8452C /* Build configuration list for PBXNativeTarget "ArgosMateTests" */;
-			buildPhases = (
-				1A146CAA2F9D26F900A8452C /* Sources */,
-				1A146CAB2F9D26F900A8452C /* Frameworks */,
-				1A146CAC2F9D26F900A8452C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				1A146CB02F9D26F900A8452C /* PBXTargetDependency */,
-			);
-			name = ArgosMateTests;
-			packageProductDependencies = (
-			);
-			productName = ArgosMateTests;
-			productReference = 1A146CAE2F9D26F900A8452C /* ArgosMateTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		1A146CB72F9D26F900A8452C /* ArgosMateUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1A146CC82F9D26F900A8452C /* Build configuration list for PBXNativeTarget "ArgosMateUITests" */;
-			buildPhases = (
-				1A146CB42F9D26F900A8452C /* Sources */,
-				1A146CB52F9D26F900A8452C /* Frameworks */,
-				1A146CB62F9D26F900A8452C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				1A146CBA2F9D26F900A8452C /* PBXTargetDependency */,
-			);
-			name = ArgosMateUITests;
-			packageProductDependencies = (
-			);
-			productName = ArgosMateUITests;
-			productReference = 1A146CB82F9D26F900A8452C /* ArgosMateUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -157,14 +82,6 @@
 				TargetAttributes = {
 					1A146C9F2F9D26F700A8452C = {
 						CreatedOnToolsVersion = 16.4;
-					};
-					1A146CAD2F9D26F900A8452C = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = 1A146C9F2F9D26F700A8452C;
-					};
-					1A146CB72F9D26F900A8452C = {
-						CreatedOnToolsVersion = 16.4;
-						TestTargetID = 1A146C9F2F9D26F700A8452C;
 					};
 				};
 			};
@@ -183,28 +100,12 @@
 			projectRoot = "";
 			targets = (
 				1A146C9F2F9D26F700A8452C /* ArgosMate */,
-				1A146CAD2F9D26F900A8452C /* ArgosMateTests */,
-				1A146CB72F9D26F900A8452C /* ArgosMateUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1A146C9E2F9D26F700A8452C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1A146CAC2F9D26F900A8452C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1A146CB62F9D26F900A8452C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -221,34 +122,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1A146CAA2F9D26F900A8452C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1A146CB42F9D26F900A8452C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		1A146CB02F9D26F900A8452C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1A146C9F2F9D26F700A8452C /* ArgosMate */;
-			targetProxy = 1A146CAF2F9D26F900A8452C /* PBXContainerItemProxy */;
-		};
-		1A146CBA2F9D26F900A8452C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1A146C9F2F9D26F700A8452C /* ArgosMate */;
-			targetProxy = 1A146CB92F9D26F900A8452C /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1A146CC02F9D26F900A8452C /* Debug */ = {
@@ -377,6 +251,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ArgosMate/ArgosMate.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -384,11 +259,14 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Bluetooth used to communicate with the argos espresso machine";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Peripheral usage detection used to communicate with the argos espresso machine";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.matthewnitschke.ArgosMate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -404,6 +282,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = ArgosMate/ArgosMate.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -411,85 +290,20 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Bluetooth used to communicate with the argos espresso machine";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "Peripheral usage detection used to communicate with the argos espresso machine";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.matthewnitschke.ArgosMate;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
-		1A146CC62F9D26F900A8452C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2UUHVMK45C;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.matthewnitschke.ArgosMateTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ArgosMate.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ArgosMate";
-			};
-			name = Debug;
-		};
-		1A146CC72F9D26F900A8452C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2UUHVMK45C;
-				GENERATE_INFOPLIST_FILE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 15.5;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.matthewnitschke.ArgosMateTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ArgosMate.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ArgosMate";
-			};
-			name = Release;
-		};
-		1A146CC92F9D26F900A8452C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2UUHVMK45C;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.matthewnitschke.ArgosMateUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = ArgosMate;
-			};
-			name = Debug;
-		};
-		1A146CCA2F9D26F900A8452C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2UUHVMK45C;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.matthewnitschke.ArgosMateUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = ArgosMate;
 			};
 			name = Release;
 		};
@@ -510,24 +324,6 @@
 			buildConfigurations = (
 				1A146CC32F9D26F900A8452C /* Debug */,
 				1A146CC42F9D26F900A8452C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1A146CC52F9D26F900A8452C /* Build configuration list for PBXNativeTarget "ArgosMateTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1A146CC62F9D26F900A8452C /* Debug */,
-				1A146CC72F9D26F900A8452C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		1A146CC82F9D26F900A8452C /* Build configuration list for PBXNativeTarget "ArgosMateUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				1A146CC92F9D26F900A8452C /* Debug */,
-				1A146CCA2F9D26F900A8452C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

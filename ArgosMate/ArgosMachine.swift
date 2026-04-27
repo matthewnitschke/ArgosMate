@@ -27,9 +27,7 @@ final class ArgosMachine: NSObject, ObservableObject {
 
     override init() {
         super.init()
-    }
-
-    func initiate() {
+        
         centralManager = CBCentralManager(delegate: self, queue: .main)
     }
 
