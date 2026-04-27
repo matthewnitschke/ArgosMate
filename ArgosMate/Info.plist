@@ -4,5 +4,7 @@
 <dict>
 	<key>LSUIElement</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>ArgosMate uses Bluetooth to connect to your Argos espresso machine and monitor temperature.</string>
 </dict>
 </plist>

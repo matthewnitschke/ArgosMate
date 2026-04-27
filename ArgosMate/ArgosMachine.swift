@@ -1,6 +1,5 @@
 import Foundation
 import CoreBluetooth
-import Combine
 
 enum FluidLevel: UInt32 {
     case ok = 0
@@ -87,27 +86,29 @@ extension ArgosMachine: CBPeripheralDelegate {
 
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic, error: Error?) {
         guard let data = characteristic.value else { return }
+        guard data.count >= 8 || characteristic.uuid == fluidLevelUUID else { return }
 
         DispatchQueue.main.async { [weak self] in
-            switch characteristic.uuid {
-            case fluidLevelUUID:
+            guard let self = self else { return }
+            
+            if characteristic.uuid == fluidLevelUUID {
                 let rawValue = data.withUnsafeBytes { $0.load(as: UInt32.self) }
-                self?.fluidLevel = FluidLevel(rawValue: rawValue) ?? .ok
+                self.fluidLevel = FluidLevel(rawValue: rawValue) ?? .ok
+                return
+            }
+
+            let value = data.withUnsafeBytes { $0.load(as: Double.self) }
+            switch characteristic.uuid {
+            case setPointUUID:
+                self.setPoint = value
+            case boilerCurrentUUID:
+                self.boilerCurrent = value
+            case boilerTargetUUID:
+                self.boilerTarget = value
+            case groupheadTempUUID:
+                self.groupheadTemp = value
             default:
-                guard data.count >= 8 else { return }
-                let value = data.withUnsafeBytes { $0.load(as: Double.self) }
-                switch characteristic.uuid {
-                case setPointUUID:
-                    self?.setPoint = value
-                case boilerCurrentUUID:
-                    self?.boilerCurrent = value
-                case boilerTargetUUID:
-                    self?.boilerTarget = value
-                case groupheadTempUUID:
-                    self?.groupheadTemp = value
-                default:
-                    break
-                }
+                break
             }
         }
     }

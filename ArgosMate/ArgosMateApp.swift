@@ -5,6 +5,13 @@ import Combine
 @main
 struct ArgosMateApp: App {
     @StateObject private var machine = ArgosMachine()
+    @StateObject private var notificationAdapter: NotificationAdapter
+
+    init() {
+        let machine = ArgosMachine()
+        _machine = StateObject(wrappedValue: machine)
+        _notificationAdapter = StateObject(wrappedValue: NotificationAdapter(machine: machine))
+    }
 
     var body: some Scene {
         MenuBarExtra {
