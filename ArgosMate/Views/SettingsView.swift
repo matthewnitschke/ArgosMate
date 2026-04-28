@@ -41,6 +41,16 @@ struct AboutSettingsView: View {
 
                         Text("Version 1.0")
                             .font(.footnote)
+                        
+                        
+                        HStack(spacing: 1.5) {
+                            Text("Made with").font(.footnote)
+                            Image(systemName: "heart.fill")
+                                .foregroundColor(.red)
+                                .font(.footnote)
+                            Text("by").font(.footnote)
+                            Link("Matthew Nitschke", destination: URL(string: "https://github.com/matthewnitschke")!).font(.footnote)
+                        }
                     }
                     Spacer()
                 }

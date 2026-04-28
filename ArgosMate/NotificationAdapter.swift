@@ -41,6 +41,7 @@ final class NotificationAdapter: ObservableObject {
         content.title = "Argos Ready"
         content.body = String(format: "Machine reached %.1f°C", target)
         content.sound = .default
+        content.userInfo = ["icon": "AppIcon"]
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request)
     }
