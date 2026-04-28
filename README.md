@@ -9,6 +9,9 @@ A menubar application for monitoring an argos espresso machine
 
 ![demo](./doc/demo.png)
 
+## Support this project
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/yellow_img.png)](https://www.buymeacoffee.com/matthewnitschke)
+
 # Installation
 
 - Download the latest `ArgosMate.md` file from the [Releases](https://github.com/matthewnitschke/ArgosMate/releases) page
