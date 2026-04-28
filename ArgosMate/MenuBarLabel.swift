@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MenuBarLabel: View {
     @ObservedObject var machine: ArgosMachine
-
+    @EnvironmentObject var appState: AppState
 
     var body: some View {
         Image(nsImage: createIconImage())
@@ -18,8 +18,8 @@ struct MenuBarLabel: View {
             } else {
                 Text(String(
                     format: "%.0f° / %.0f°",
-                    machine.boilerCurrent,
-                    machine.boilerTarget
+                    appState.convertTemperature(machine.boilerCurrent),
+                    appState.convertTemperature(machine.boilerTarget)
                 ))
             }
         }

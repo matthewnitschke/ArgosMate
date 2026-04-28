@@ -13,12 +13,36 @@ struct SettingsView: View {
 }
 
 struct GeneralSettingsView: View {
-    @EnvironmentObject private var machine: ArgosMachine
+    @EnvironmentObject private var appState: AppState
+    
+    @Environment(\.openURL) var openURL
 
     var body: some View {
         Form {
             Section {
-                Toggle("Notify when ready", isOn: .constant(true))
+                if appState.notificationsDisabled {
+                    LabeledContent {
+                        Button("System Settings") {
+                            self.openURL(.notificationSettings)
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                            Text("Notifications are disabled")
+                        }
+                    }
+                }
+                Toggle(isOn: appState.$notifyWhenReady) {
+                    Text("Notify when ready")
+                        .opacity(appState.notificationsDisabled ? 0.5 : 1)
+                }
+                .disabled(appState.notificationsDisabled)
+            }
+            Section {
+                Picker("Measurement Unit", selection: $appState.temperatureUnit) {
+                    Text("℉").tag(TemperatureUnit.fahrenheit)
+                    Text("℃").tag(TemperatureUnit.celsius)
+                }
             }
         }
         .formStyle(.grouped)
@@ -58,4 +82,19 @@ struct AboutSettingsView: View {
         }
         .formStyle(.grouped)
     }
+}
+
+
+extension URL {
+    static let notificationSettings: URL = {
+        let url = URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension")!
+        
+        guard let bundleId = Bundle.main.bundleIdentifier else {
+            return url
+        }
+        
+        return url.appending(queryItems: [
+            .init(name: "id", value: bundleId)
+        ])
+    }()
 }

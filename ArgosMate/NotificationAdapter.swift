@@ -6,12 +6,14 @@ final class NotificationAdapter: ObservableObject {
     @Published var isReady: Bool = false
 
     private let machine: ArgosMachine
+    private let appState: AppState
     private var cancellables = Set<AnyCancellable>()
     private var hasNotifiedReady = false
     private let temperatureThreshold: Double = 1.0
 
-    init(machine: ArgosMachine) {
+    init(machine: ArgosMachine, appState: AppState) {
         self.machine = machine
+        self.appState = appState
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
         setupBindings()
     }
@@ -37,9 +39,15 @@ final class NotificationAdapter: ObservableObject {
     }
 
     private func sendNotification(target: Double) {
+        if !appState.notifyWhenReady {
+            return
+        }
+        
+        let convertedTemp = appState.convertTemperature(target)
+        let unitSymbol = appState.temperatureUnit == .celsius ? "°C" : "°F"
         let content = UNMutableNotificationContent()
         content.title = "Argos Ready"
-        content.body = String(format: "Machine reached %.1f°C", target)
+        content.body = String(format: "Machine reached %.1f\(unitSymbol)", convertedTemp)
         content.sound = .default
         content.userInfo = ["icon": "AppIcon"]
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
