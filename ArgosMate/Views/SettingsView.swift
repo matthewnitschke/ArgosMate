@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import LaunchAtLogin
 
 struct SettingsView: View {
     var body: some View {
@@ -37,12 +38,15 @@ struct GeneralSettingsView: View {
                         .opacity(appState.notificationsDisabled ? 0.5 : 1)
                 }
                 .disabled(appState.notificationsDisabled)
-            }
-            Section {
+                
+                
+                LaunchAtLogin.Toggle()
+                
                 Picker("Measurement Unit", selection: $appState.temperatureUnit) {
                     Text("℉").tag(TemperatureUnit.fahrenheit)
                     Text("℃").tag(TemperatureUnit.celsius)
                 }
+            
             }
         }
         .formStyle(.grouped)

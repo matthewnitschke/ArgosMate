@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1A0D6A1E2FA069D0007625B0 /* LaunchAtLogin in Frameworks */ = {isa = PBXBuildFile; productRef = 1A0D6A1D2FA069D0007625B0 /* LaunchAtLogin */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		1A146CA02F9D26F700A8452C /* ArgosMate.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArgosMate.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1A0D6A1E2FA069D0007625B0 /* LaunchAtLogin in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = ArgosMate;
 			packageProductDependencies = (
+				1A0D6A1D2FA069D0007625B0 /* LaunchAtLogin */,
 			);
 			productName = ArgosMate;
 			productReference = 1A146CA02F9D26F700A8452C /* ArgosMate.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 1A146C972F9D26F700A8452C;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				1A0D6A1C2FA069D0007625B0 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 1A146CA12F9D26F700A8452C /* Products */;
 			projectDirPath = "";
@@ -329,6 +338,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		1A0D6A1C2FA069D0007625B0 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sindresorhus/LaunchAtLogin-Modern";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1A0D6A1D2FA069D0007625B0 /* LaunchAtLogin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1A0D6A1C2FA069D0007625B0 /* XCRemoteSwiftPackageReference "LaunchAtLogin-Modern" */;
+			productName = LaunchAtLogin;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 1A146C982F9D26F700A8452C /* Project object */;
 }
