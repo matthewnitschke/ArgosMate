@@ -34,5 +34,5 @@ build/
 *.dat
 *.dep
 
-EmberMate*.dmg
+ArgosMate*.dmg
 exportOptions.plist
