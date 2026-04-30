@@ -5,7 +5,7 @@ struct MenuBarLabel: View {
     @EnvironmentObject var appState: AppState
 
     var body: some View {
-        Image(nsImage: createIconImage())
+        Image(nsImage: machine.isConnected ? createIconImage() : createOutlineIconImage())
         
         if !machine.isConnected {
             Text("")
