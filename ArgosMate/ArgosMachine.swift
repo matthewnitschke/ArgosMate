@@ -67,6 +67,11 @@ extension ArgosMachine: CBCentralManagerDelegate {
         }
         central.scanForPeripherals(withServices: [serviceUUID], options: nil)
     }
+
+    func disconnect() {
+        guard let peripheral = peripheral else { return }
+        centralManager?.cancelPeripheralConnection(peripheral)
+    }
 }
 
 extension ArgosMachine: CBPeripheralDelegate {

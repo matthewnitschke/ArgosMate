@@ -38,6 +38,10 @@ struct GeneralSettingsView: View {
                         .opacity(appState.notificationsDisabled ? 0.5 : 1)
                 }
                 .disabled(appState.notificationsDisabled)
+
+                Toggle(isOn: appState.$disconnectWhenReady) {
+                    Text("Disconnect when ready")
+                }
                 
                 
                 LaunchAtLogin.Toggle()
