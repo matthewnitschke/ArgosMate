@@ -15,6 +15,11 @@ struct MenuBarContent: View {
                 Button(String(format: "Grouphead: %.1f\(unitSymbol)", appState.convertTemperature(machine.groupheadTemp))) {}
             } else {
                 Text("Disconnected")
+                if appState.disconnectWhenReady {
+                    Button("Connect") {
+                        machine.reconnect()
+                    }
+                }
             }
             
             Divider()
