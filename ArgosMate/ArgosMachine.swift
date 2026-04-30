@@ -20,6 +20,7 @@ final class ArgosMachine: NSObject, ObservableObject {
     @Published var boilerTarget: Double = 0
     @Published var groupheadTemp: Double = 0
     @Published var fluidLevel: FluidLevel = .ok
+    var shouldAutoReconnect: Bool = true
 
     private var centralManager: CBCentralManager?
     private var peripheral: CBPeripheral?
@@ -65,7 +66,21 @@ extension ArgosMachine: CBCentralManagerDelegate {
             self?.groupheadTemp = 0
             self?.fluidLevel = .ok
         }
-        central.scanForPeripherals(withServices: [serviceUUID], options: nil)
+        if shouldAutoReconnect {
+            central.scanForPeripherals(withServices: [serviceUUID], options: nil)
+        }
+    }
+
+    func disconnect() {
+        shouldAutoReconnect = false
+        guard let peripheral = peripheral else { return }
+        centralManager?.cancelPeripheralConnection(peripheral)
+    }
+
+    func reconnect() {
+        shouldAutoReconnect = true
+        peripheral = nil
+        centralManager?.scanForPeripherals(withServices: [serviceUUID], options: nil)
     }
 }
 

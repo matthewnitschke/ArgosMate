@@ -10,6 +10,7 @@ enum TemperatureUnit: Int {
 class AppState: ObservableObject {
     @Published var notificationsDisabled = false
     @AppStorage("notifyWhenReady") var notifyWhenReady = true
+    @AppStorage("disconnectWhenReady") var disconnectWhenReady = false
 
     var temperatureUnit: TemperatureUnit {
         get {
