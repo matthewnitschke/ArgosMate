@@ -21,6 +21,11 @@ struct GeneralSettingsView: View {
     var body: some View {
         Form {
             Section {
+                Picker("Measurement Unit", selection: $appState.temperatureUnit) {
+                    Text("℉").tag(TemperatureUnit.fahrenheit)
+                    Text("℃").tag(TemperatureUnit.celsius)
+                }
+                
                 if appState.notificationsDisabled {
                     LabeledContent {
                         Button("System Settings") {
@@ -39,17 +44,20 @@ struct GeneralSettingsView: View {
                 }
                 .disabled(appState.notificationsDisabled)
 
-                Toggle(isOn: appState.$disconnectWhenReady) {
-                    Text("Disconnect when ready")
+                VStack(alignment: .leading, spacing: 6) {
+                    Toggle(isOn: appState.$disconnectWhenReady) {
+                        Text("Disconnect when ready")
+                    }
+                    Text("The Argos machine supports only one Bluetooth connection at a time. Enabling this will disconnect ArgosMate when the machine is ready, allowing the Odyssey app to connect for brew charting.")
+                        .foregroundColor(.secondary)
+                        .font(.footnote)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 
                 
                 LaunchAtLogin.Toggle()
                 
-                Picker("Measurement Unit", selection: $appState.temperatureUnit) {
-                    Text("℉").tag(TemperatureUnit.fahrenheit)
-                    Text("℃").tag(TemperatureUnit.celsius)
-                }
+                
             
             }
         }
