@@ -79,7 +79,7 @@ struct AboutSettingsView: View {
                         Text("ArgosMate")
                             .font(.title)
 
-                        Text("Version 1.0")
+                        Text("Version \(Bundle.main.infoDictionary!["CFBundleShortVersionString"]!)")
                             .font(.footnote)
                         
                         
