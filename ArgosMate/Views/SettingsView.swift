@@ -7,6 +7,8 @@ struct SettingsView: View {
         TabView {
             GeneralSettingsView()
                 .tabItem { Label("General", systemImage: "gear") }
+            IotSettingsView()
+                .tabItem { Label("IoT", systemImage: "antenna.radiowaves.left.and.right") }
             AboutSettingsView()
                 .tabItem { Label("About", systemImage: "info.circle") }
         }
@@ -56,9 +58,32 @@ struct GeneralSettingsView: View {
                 
                 
                 LaunchAtLogin.Toggle()
-                
-                
             
+            }
+        }
+        .formStyle(.grouped)
+    }
+}
+
+struct IotSettingsView: View {
+    @EnvironmentObject private var appState: AppState
+
+    var body: some View {
+        Form {
+            Section("URL") {
+                TextField("", text: $appState.iotUrl)
+                    .labelsHidden()
+                    .lineLimit(1)
+            }
+
+            Section("Headers") {
+                IotTextEditor(text: $appState.iotHeaders)
+                    .frame(minHeight: 75)
+            }
+
+            Section("Body") {
+                IotTextEditor(text: $appState.iotBody)
+                    .frame(minHeight: 75)
             }
         }
         .formStyle(.grouped)
@@ -100,6 +125,49 @@ struct AboutSettingsView: View {
     }
 }
 
+
+struct IotTextEditor: NSViewRepresentable {
+    @Binding var text: String
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    func makeNSView(context: Context) -> NSScrollView {
+        let scrollView = NSTextView.scrollableTextView()
+        let textView = scrollView.documentView as! NSTextView
+        textView.isAutomaticQuoteSubstitutionEnabled = false
+        textView.isAutomaticDashSubstitutionEnabled = false
+        textView.isAutomaticTextReplacementEnabled = false
+        textView.font = NSFont.monospacedSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
+        textView.textContainerInset = NSSize(width: 0, height: 4)
+        textView.delegate = context.coordinator
+        scrollView.borderType = .bezelBorder
+        scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
+        return scrollView
+    }
+
+    func updateNSView(_ nsView: NSScrollView, context: Context) {
+        let textView = nsView.documentView as! NSTextView
+        if textView.string != text {
+            textView.string = text
+        }
+    }
+
+    class Coordinator: NSObject, NSTextViewDelegate {
+        var parent: IotTextEditor
+
+        init(_ parent: IotTextEditor) {
+            self.parent = parent
+        }
+
+        func textDidChange(_ notification: Notification) {
+            guard let textView = notification.object as? NSTextView else { return }
+            parent.text = textView.string
+        }
+    }
+}
 
 extension URL {
     static let notificationSettings: URL = {

@@ -27,7 +27,7 @@ struct ArgosMateApp: App {
 
         Settings {
             SettingsView()
-                .frame(width: 400, height: 300)
+                .frame(width: 400, height: 450)
                 .environmentObject(machine)
                 .environmentObject(appState)
         }
