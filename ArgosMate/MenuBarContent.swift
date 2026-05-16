@@ -16,11 +16,21 @@ struct MenuBarContent: View {
                 Divider()
             }
             
-            if machine.isConnected {
-                Button("Disconnect") { machine.disconnect() }
+            if appState.hasIoTConfig {
+                Button(
+                    machine.isConnected ? "Turn Off" : "Turn On"
+                ) {
+                    appState.sendIoTRequest()
+                }
             } else {
-                Button("Connect") {
-                    machine.reconnect()
+                if machine.isConnected {
+                    Button("Disconnect") {
+                        machine.disconnect()
+                    }
+                } else {
+                    Button("Connect") {
+                        machine.reconnect()
+                    }
                 }
             }
             
