@@ -13,16 +13,16 @@ struct MenuBarContent: View {
                 Button(String(format: "Current: %.1f\(unitSymbol)", appState.convertTemperature(machine.boilerCurrent))) {}
                 Button(String(format: "Target: %.1f\(unitSymbol)", appState.convertTemperature(machine.boilerTarget))) {}
                 Button(String(format: "Grouphead: %.1f\(unitSymbol)", appState.convertTemperature(machine.groupheadTemp))) {}
-            } else {
-                Text("Disconnected")
-                if appState.disconnectWhenReady {
-                    Button("Connect") {
-                        machine.reconnect()
-                    }
-                }
+                Divider()
             }
             
-            Divider()
+            if machine.isConnected {
+                Button("Disconnect") { machine.disconnect() }
+            } else {
+                Button("Connect") {
+                    machine.reconnect()
+                }
+            }
             
             SettingsLink {
                 Text("Settings")
