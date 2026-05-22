@@ -35,8 +35,6 @@ final class NotificationAdapter: ObservableObject {
             if appState.disconnectWhenReady {
                 machine.disconnect()
             }
-        } else if !ready {
-            hasNotifiedReady = false
         }
         isReady = ready
     }
