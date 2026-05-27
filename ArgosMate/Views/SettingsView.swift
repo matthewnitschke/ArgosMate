@@ -70,6 +70,18 @@ struct IotSettingsView: View {
 
     var body: some View {
         Form {
+            Section("Method") {
+                Picker("", selection: $appState.iotMethod) {
+                    Text("GET").tag("GET")
+                    Text("POST").tag("POST")
+                    Text("PUT").tag("PUT")
+                    Text("PATCH").tag("PATCH")
+                    Text("DELETE").tag("DELETE")
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+            }
+
             Section("URL") {
                 TextField("", text: $appState.iotUrl)
                     .labelsHidden()
