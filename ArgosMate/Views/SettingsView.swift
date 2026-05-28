@@ -68,8 +68,35 @@ struct GeneralSettingsView: View {
 struct IotSettingsView: View {
     @EnvironmentObject private var appState: AppState
 
+    private var headersError: String? {
+        let text = appState.iotHeaders.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !text.isEmpty else { return nil }
+        guard let data = text.data(using: .utf8) else { return nil }
+        do {
+            let json = try JSONSerialization.jsonObject(with: data)
+            guard json is [String: String] else {
+                return "Headers must be a flat JSON object with string values"
+            }
+            return nil
+        } catch {
+            return "Invalid JSON: \(error.localizedDescription)"
+        }
+    }
+
     var body: some View {
         Form {
+            Section("Method") {
+                Picker("", selection: $appState.iotMethod) {
+                    Text("GET").tag("GET")
+                    Text("POST").tag("POST")
+                    Text("PUT").tag("PUT")
+                    Text("PATCH").tag("PATCH")
+                    Text("DELETE").tag("DELETE")
+                }
+                .labelsHidden()
+                .pickerStyle(.segmented)
+            }
+
             Section("URL") {
                 TextField("", text: $appState.iotUrl)
                     .labelsHidden()
@@ -77,8 +104,17 @@ struct IotSettingsView: View {
             }
 
             Section("Headers") {
-                IotTextEditor(text: $appState.iotHeaders)
+                IotTextEditor(text: $appState.iotHeaders, placeholder: """
+{
+  "Authorization": "Basic ..."
+}
+""")
                     .frame(minHeight: 75)
+                if let error = headersError {
+                    Label(error, systemImage: "exclamationmark.triangle.fill")
+                        .foregroundColor(.red)
+                        .font(.caption)
+                }
             }
 
             Section("Body") {
@@ -128,6 +164,7 @@ struct AboutSettingsView: View {
 
 struct IotTextEditor: NSViewRepresentable {
     @Binding var text: String
+    var placeholder: String = ""
 
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
@@ -142,6 +179,7 @@ struct IotTextEditor: NSViewRepresentable {
         textView.font = NSFont.monospacedSystemFont(ofSize: NSFont.smallSystemFontSize, weight: .regular)
         textView.textContainerInset = NSSize(width: 0, height: 4)
         textView.delegate = context.coordinator
+        textView.setValue(placeholder, forKey: "placeholderString")
         scrollView.borderType = .bezelBorder
         scrollView.hasVerticalScroller = true
         scrollView.autohidesScrollers = true
@@ -153,6 +191,7 @@ struct IotTextEditor: NSViewRepresentable {
         if textView.string != text {
             textView.string = text
         }
+        textView.setValue(placeholder, forKey: "placeholderString")
     }
 
     class Coordinator: NSObject, NSTextViewDelegate {

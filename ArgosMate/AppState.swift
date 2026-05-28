@@ -12,6 +12,7 @@ class AppState: ObservableObject {
     @AppStorage("notifyWhenReady") var notifyWhenReady = true
     @AppStorage("disconnectWhenReady") var disconnectWhenReady = false
     @AppStorage("iotUrl") var iotUrl = ""
+    @AppStorage("iotMethod") var iotMethod = "POST"
     @AppStorage("iotHeaders") var iotHeaders = ""
     @AppStorage("iotBody") var iotBody = ""
 
@@ -39,17 +40,61 @@ class AppState: ObservableObject {
     func sendIoTRequest() {
         guard let url = URL(string: iotUrl) else { return }
         var request = URLRequest(url: url)
-        request.httpMethod = "POST"
+        request.httpMethod = iotMethod
 
-        if !iotHeaders.isEmpty, let data = iotHeaders.data(using: .utf8),
-           let headers = try? JSONSerialization.jsonObject(with: data) as? [String: String] {
-            for (key, value) in headers {
-                request.setValue(value, forHTTPHeaderField: key)
+        if !iotHeaders.isEmpty, let data = iotHeaders.data(using: .utf8) {
+            do {
+                if let headers = try JSONSerialization.jsonObject(with: data) as? [String: String] {
+                    for (key, value) in headers {
+                        request.setValue(value, forHTTPHeaderField: key)
+                    }
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    let alert = NSAlert()
+                    alert.messageText = "Invalid IoT Headers JSON"
+                    alert.informativeText = error.localizedDescription
+                    alert.alertStyle = .warning
+                    alert.addButton(withTitle: "OK")
+                    alert.runModal()
+                }
+                return
             }
         }
 
-        request.httpBody = iotBody.data(using: .utf8)
+        if iotMethod != "GET" {
+            request.httpBody = iotBody.data(using: .utf8)
+        }
 
-        URLSession.shared.dataTask(with: request).resume()
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async {
+                    let alert = NSAlert()
+                    alert.messageText = "IoT Request Failed"
+                    alert.informativeText = error.localizedDescription
+                    alert.alertStyle = .warning
+                    alert.addButton(withTitle: "OK")
+                    alert.runModal()
+                }
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse,
+               !(200...299).contains(httpResponse.statusCode)
+            {
+                DispatchQueue.main.async {
+                    var message = "HTTP \(httpResponse.statusCode)"
+                    if let data = data, let body = String(data: data, encoding: .utf8), !body.isEmpty {
+                        message += "\n\n\(body)"
+                    }
+                    let alert = NSAlert()
+                    alert.messageText = "IoT Request Failed"
+                    alert.informativeText = message
+                    alert.alertStyle = .warning
+                    alert.addButton(withTitle: "OK")
+                    alert.runModal()
+                }
+            }
+        }.resume()
     }
 }
