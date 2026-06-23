@@ -11,6 +11,8 @@ struct MenuBarLabel: View {
             Text("")
         } else if machine.fluidLevel != .ok {
             Text("No Water")
+        } else if machine.isStandby {
+            Text("Standby")
         } else {
             let isAtTemp = abs(machine.boilerCurrent - machine.boilerTarget) < 0.5
             if isAtTemp {

@@ -7,7 +7,7 @@ struct MenuBarContent: View {
     var body: some View {
         Section("Argos Espresso Machine") {
             Divider()
-            if machine.isConnected {
+            if machine.isConnected, !machine.isStandby {
                 let unitSymbol = appState.temperatureUnit == .celsius ? "°C" : "°F"
                 Button(String(format: "Set Point: %.1f\(unitSymbol)", appState.convertTemperature(machine.setPoint))) {}
                 Button(String(format: "Current: %.1f\(unitSymbol)", appState.convertTemperature(machine.boilerCurrent))) {}

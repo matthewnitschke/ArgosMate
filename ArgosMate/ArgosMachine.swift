@@ -20,6 +20,9 @@ final class ArgosMachine: NSObject, ObservableObject {
     @Published var boilerTarget: Double = 0
     @Published var groupheadTemp: Double = 0
     @Published var fluidLevel: FluidLevel = .ok
+    var isStandby: Bool {
+        isConnected && groupheadTemp == 0
+    }
     var shouldAutoReconnect: Bool = true
 
     private var centralManager: CBCentralManager?
