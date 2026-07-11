@@ -66,7 +66,11 @@ class AppState: ObservableObject {
             request.httpBody = iotBody.data(using: .utf8)
         }
 
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        let config = URLSessionConfiguration.ephemeral
+        config.requestCachePolicy = .reloadIgnoringLocalCacheData
+        config.urlCache = nil
+        let session = URLSession(configuration: config)
+        session.dataTask(with: request) { data, response, error in
             if let error = error {
                 DispatchQueue.main.async {
                     let alert = NSAlert()

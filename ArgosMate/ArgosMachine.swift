@@ -20,9 +20,7 @@ final class ArgosMachine: NSObject, ObservableObject {
     @Published var boilerTarget: Double = 0
     @Published var groupheadTemp: Double = 0
     @Published var fluidLevel: FluidLevel = .ok
-    var isStandby: Bool {
-        isConnected && groupheadTemp == 0
-    }
+    @Published var isStandby: Bool = false
     var shouldAutoReconnect: Bool = true
 
     private var centralManager: CBCentralManager?
@@ -65,6 +63,7 @@ extension ArgosMachine: CBCentralManagerDelegate {
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         DispatchQueue.main.async { [weak self] in
             self?.isConnected = false
+            self?.isStandby = false
             self?.boilerCurrent = 0
             self?.groupheadTemp = 0
             self?.fluidLevel = .ok
@@ -91,7 +90,7 @@ extension ArgosMachine: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         guard let services = peripheral.services else { return }
         for service in services {
-            peripheral.discoverCharacteristics([setPointUUID, boilerCurrentUUID, boilerTargetUUID, fluidLevelUUID], for: service)
+            peripheral.discoverCharacteristics([setPointUUID, boilerCurrentUUID, boilerTargetUUID, groupheadTempUUID, fluidLevelUUID], for: service)
         }
     }
 
@@ -108,10 +107,12 @@ extension ArgosMachine: CBPeripheralDelegate {
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            
+            self.isStandby = false
+
             if characteristic.uuid == fluidLevelUUID {
                 let rawValue = data.withUnsafeBytes { $0.load(as: UInt32.self) }
                 self.fluidLevel = FluidLevel(rawValue: rawValue) ?? .ok
+                self.isStandby = false
                 return
             }
 
@@ -125,6 +126,7 @@ extension ArgosMachine: CBPeripheralDelegate {
                 self.boilerTarget = value
             case groupheadTempUUID:
                 self.groupheadTemp = value
+                self.isStandby = value == 0
             default:
                 break
             }
