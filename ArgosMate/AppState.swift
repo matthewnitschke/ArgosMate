@@ -16,6 +16,8 @@ class AppState: ObservableObject {
     @AppStorage("iotHeaders") var iotHeaders = ""
     @AppStorage("iotBody") var iotBody = ""
 
+    private let iotSession = URLSession.shared
+
     var temperatureUnit: TemperatureUnit {
         get {
             TemperatureUnit(rawValue: UserDefaults.standard.integer(forKey: "temperatureUnit")) ?? .celsius
@@ -66,11 +68,18 @@ class AppState: ObservableObject {
             request.httpBody = iotBody.data(using: .utf8)
         }
 
-        let config = URLSessionConfiguration.ephemeral
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        config.urlCache = nil
-        let session = URLSession(configuration: config)
-        session.dataTask(with: request) { data, response, error in
+        performIoTRequest(request, attempt: 1)
+    }
+
+    private func performIoTRequest(_ request: URLRequest, attempt: Int) {
+        iotSession.dataTask(with: request) { [weak self] data, response, error in
+            if let error = error, attempt < 2 {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self?.performIoTRequest(request, attempt: attempt + 1)
+                }
+                return
+            }
+
             if let error = error {
                 DispatchQueue.main.async {
                     let alert = NSAlert()
