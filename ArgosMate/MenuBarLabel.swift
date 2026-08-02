@@ -9,6 +9,8 @@ struct MenuBarLabel: View {
         
         if !machine.isConnected {
             Text("")
+        } else if machine.isStandby {
+            Text("Standby")
         } else if machine.fluidLevel != .ok {
             Text("No Water")
         } else if machine.isStandby {
